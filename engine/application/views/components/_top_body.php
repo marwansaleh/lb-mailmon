@@ -165,7 +165,7 @@
                     $(form).ajaxSubmit({
                         clearForm: true,
                         type: 'POST',
-                        url: '<?php echo config_item('service_url').'user/changepassword'; ?>',
+                        url: '<?php echo get_action_url('service/user/changepassword'); ?>',
                         dataType: 'json',
                         success: function(data){
                             if (data.status){
