@@ -111,8 +111,8 @@
     </div>
     <div class="form-group form-group-lg">
         <button type="submit" id="btn-submit-out" class="hidden"></button>
-        <button type="button" id="btn-sign" class="btn btn-primary btn-large"><i class="fa fa-check-circle-o"></i> Tandatangani</button>
-        <button type="button" id="btn-reject" class="btn btn-warning btn-large"><i class="fa fa-remove"></i> Revisi</button>
+        <button type="button" id="btn-sign" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-check-circle-o"></i> Tandatangani</button>
+        <button type="button" id="btn-reject" class="btn btn-warning btn-large" data-loading-text="Wait..."><i class="fa fa-remove"></i> Revisi</button>
         <div class="pull-right">
             <button type="button" class="btn btn-default btn-large" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
         </div>

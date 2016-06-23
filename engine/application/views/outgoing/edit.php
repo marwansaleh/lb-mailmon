@@ -131,7 +131,7 @@
     </div>
 
     <div class="form-group form-group-lg">
-        <button type="submit" class="btn btn-primary btn-large"><i class="fa fa-save"></i> Submit</button>
+        <button type="submit" class="btn btn-primary btn-large" id="btn-submit" data-loading-text="Wait..."><i class="fa fa-save"></i> Submit</button>
         <a id="btn-cancel" class="btn btn-success btn-large" href="<?php echo $back_url; ?>"><i class="fa fa-backward"></i> Back</a>
         <div class="pull-right">
             <button type="button" id="btn-upload" class="btn btn-warning">Upload Dokumen <i class="fa fa-arrow-right"></i></button>
@@ -246,12 +246,16 @@
         },
         saveAjaxForm: function(form){
             var _this = this;
+            var $btn = $('#btn-submit');
+            $btn.button('loading');
+                    
             var submitType = _this.mailId ? 'PUT' : 'POST';
             $(form).ajaxSubmit({
                 type: submitType,
                 url: '<?php echo get_action_url('service/outgoing/index'); ?>/'+_this.mailId,
                 dataType: 'json',
                 success: function(data){
+                    $btn.button('reset');
                     if (data.status){
                         $('#mail-id').val(data.item.id);
                         _this.mailId = parseInt(data.item.id);

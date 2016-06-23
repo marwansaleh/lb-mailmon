@@ -25,7 +25,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="form-group">
-                                <label><span id="uppload-label">Pilih File</span></label>
+                                <label><span id="upload-label">Pilih File</span></label>
                                 <input type="file" id="file-upload" name="userfile" class="form-control">
                             </div>
                         </div>
@@ -76,8 +76,8 @@
                 dataType: 'json',
                 resetForm: true,
                 beforeSubmit: function(){
-                    _this._label = $('#uppload-label').text();
-                    $('#uppload-label').text('Uploading file...');
+                    _this._label = $('#upload-label').text();
+                    $('#upload-label').text('Uploading file...');
                 },
                 success: function(data) {
                     if (data.status){
@@ -86,7 +86,7 @@
                         alert(data.message);
                     }
                     
-                    $('#uppload-label').text(_this._label);
+                    $('#upload-label').text(_this._label);
                 }
             }); 
             

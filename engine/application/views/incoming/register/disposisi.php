@@ -88,7 +88,7 @@
                         </div>
                     </div>
                     <div class="form-group form-group-lg">
-                        <button type="submit" class="btn btn-primary btn-large"><i class="fa fa-save"></i> Kirim Disposisi</button>
+                        <button type="submit" id="btn-submit" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-save"></i> Kirim Disposisi</button>
                         <a id="btn-cancel" class="btn btn-success btn-large" href="<?php echo $back_url; ?>"><i class="fa fa-backward"></i> Back</a>
                     </div>
                 </form>
@@ -162,12 +162,16 @@
                         alert('Penerima disposisi tidak boleh kosong');
                         return false;
                     }
+                    
+                    var $btn = $('#btn-submit');
+                    $btn.button('loading');
                     $(form).ajaxSubmit({
                         type: 'POST',
                         url: '<?php echo get_action_url('service/disposisi'); ?>',
                         dataType: 'json',
                         clearForm: true,
                         success: function(data){
+                            $btn.button('reset');
                             if (data.status){
                                 $(".select-penerima").val('').trigger('change');
                                 _this.loadDisposisi();
