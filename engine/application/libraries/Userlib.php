@@ -298,7 +298,6 @@ class Userlib extends Library {
         $user->nama = $this->ci->session->userdata($this->_prefix_session_access.'nama');
         $user->grup = $this->ci->session->userdata($this->_prefix_session_access.'grup');
         $user->bidang = $this->ci->session->userdata($this->_prefix_session_access.'bidang');
-        $user->wilayah = $this->ci->session->userdata($this->_prefix_session_access.'wilayah');
         $user->is_administrator = $this->ci->session->userdata($this->_prefix_session_access.'is_administrator');
         $user->root = $this->ci->session->userdata($this->_prefix_session_access.'root');
         $user->avatar = $this->ci->session->userdata($this->_prefix_session_access.'avatar');
