@@ -133,7 +133,7 @@
             
             $select2.select2({
                 ajax: {
-                    url: "<?php echo config_item('service_url') .'user/select2'; ?>",
+                    url: "<?php echo get_action_url('service/user/select2'); ?>",
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
