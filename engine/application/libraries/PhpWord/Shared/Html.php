@@ -128,6 +128,7 @@ class Html
             'ul'        => array('List',        null,   null,       $styles,    $data,  3,              null),
             'ol'        => array('List',        null,   null,       $styles,    $data,  7,              null),
             'li'        => array('ListItem',    $node,  $element,   $styles,    $data,  null,           null),
+            'span'      => array('Span',        $node,  null,       $styles,    null,    null,          null), //to catch inline span style changes
         );
 
         $newElement = null;
@@ -255,6 +256,21 @@ class Html
 
         return null;
     }
+    
+    /**
+     * Parse span
+     * 
+     * Changes the inline style when a Span element is found.
+     * 
+     * @param type $node
+     * @param array $styles
+     * @return null
+     */
+    private static function parseSpan($node, &$styles)
+    {
+        $styles['font'] = self::parseInlineStyle($node, $styles['font']);        
+        return null;        
+    }
 
     /**
      * Parse table node
@@ -362,6 +378,10 @@ class Html
                     break;
                 case 'text-align':
                     $styles['align'] = $cValue;
+                    break;
+                // added to handle font size changes.
+                case 'font-size':
+                    $styles['size'] = substr( $cValue, 0, -2); // substr used to remove the px from the html string size string
                     break;
                 case 'color':
                     $styles['color'] = trim($cValue, "#");
