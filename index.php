@@ -55,7 +55,7 @@ date_default_timezone_set('Asia/Jakarta');
  * NOTE: If you change these, also change the error_reporting() code below
  */
 //exit(dirname(__FILE__));
-$production_path = '/var/www/html/e-office';
+$production_path = '/home/doc-bappedallg/public_html';
 switch (dirname(__FILE__)){
     case $production_path:
         define('ENVIRONMENT', 'production');
