@@ -46,6 +46,9 @@ class Export extends REST_Api {
                     foreach ($default_style as $prop => $def_value){
                         $sectionStyle [$prop] = _wordpagestyling_convert($prop, isset($style->$prop) ? $style->$prop : $def_value);
                     }
+                    if (isset($sectionStyle['colsNum'])&&$sectionStyle['colsNum']>1){
+                        $sectionStyle['breakType'] = 'continuous';
+                    }
                 }
                 $section = $phpWord->addSection($sectionStyle);
                 $phpWord->setDefaultParagraphStyle(
