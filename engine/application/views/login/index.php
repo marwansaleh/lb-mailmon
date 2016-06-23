@@ -1,5 +1,7 @@
 <div class="login-box center-block">
-    
+    <div class="logo text-center">
+        <a href="#"><img src="<?php echo get_asset_url('img/logo-lubuklinggau.png') ?>" alt=""></a>
+    </div>
     <form class="form-horizontal" role="form" method="post" action="<?php echo $submit_url; ?>">
         <?php if (isset($referrer)): ?>
         <input type="hidden" name="referrer" value="<?php echo $referrer; ?>">
@@ -33,8 +35,4 @@
         </label>
         <button class="btn btn-custom-primary btn-lg btn-block btn-auth"><i class="fa fa-arrow-circle-o-right"></i> Login</button>
     </form>
-    <div class="links">
-        <p><a href="#">Lupa username atau password?</a></p>
-        <p><a href="#">Petunjuk: gunakan user: root dan password: root</a></p>
-    </div>
 </div>

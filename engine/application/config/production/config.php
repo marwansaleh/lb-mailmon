@@ -1,7 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$config['service_url'] = 'http://172.18.2.47:8181/service/';
-$config['service_nomor_url'] = 'http://karyawan.bsminsbroker.com/service/generator_nomor';
 
 /*
 |--------------------------------------------------------------------------

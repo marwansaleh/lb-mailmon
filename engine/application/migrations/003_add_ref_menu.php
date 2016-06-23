@@ -166,7 +166,7 @@ class Migration_add_ref_menu extends MY_Migration {
                         'icon'      => NULL,
                         'link'      => 'system/privilege',
                         'sort'      => 2,
-                        'hidden'    => 0
+                        'hidden'    => 1
                     ),
                     array(
                         'module'    => CT_MODULE_SYSTEM,

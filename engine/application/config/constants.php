@@ -88,7 +88,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 /*
  * CUSTOM CONSTANT
  */
-define('APP_TITLE', 'PT. BSM - Mail Monitoring');
+define('APP_TITLE', 'Mail Monitoring');
 
 define('CT_USERTYPE_ROOT', 1);
 

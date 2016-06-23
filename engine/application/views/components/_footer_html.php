@@ -1,6 +1,6 @@
         <!-- FOOTER -->
 	<footer class="footer">
-		&copy; 2016-2017 PT. BRIngin Sejahtera Makmur
+		&copy; 2015 Pemerintah Daerah Lubuklinggau
 	</footer>
 	<!-- END FOOTER -->
 	<!-- Javascript -->

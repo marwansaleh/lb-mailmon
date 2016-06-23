@@ -398,7 +398,25 @@ if (!function_exists('inches_to_twip')){
     }
 }
 
+if (!function_exists('avatar_path')){
+    function avatar_path($item=NULL){
+        if ($item){
+            return config_item('avatar') . $item;
+        }else{
+            return config_item('avatar');
+        }
+    }
+}
 
+if (!function_exists('avatar_url')){
+    function avatar_url($item=NULL){
+        if ($item){
+            return site_url(config_item('avatar') . $item);
+        }else{
+            return site_url(config_item('avatar'));
+        }
+    }
+}
 
 /*
  * Filename: general_helper.php

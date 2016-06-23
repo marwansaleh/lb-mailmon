@@ -1,7 +1,5 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-$config['service_url'] = 'http://localhost/~marwansaleh/authentication/service/';
-$config['service_nomor_url'] = 'http://localhost/~marwansaleh/bsm-pendok/service/generator_nomor';
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
@@ -24,7 +22,7 @@ $config['service_nomor_url'] = 'http://localhost/~marwansaleh/bsm-pendok/service
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/~marwansaleh/bsm-mailmon/';
+$config['base_url'] = 'http://localhost/~marwansaleh/lb-mailmon/';
 
 /*
 |--------------------------------------------------------------------------

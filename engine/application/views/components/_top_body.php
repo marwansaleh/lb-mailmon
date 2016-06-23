@@ -3,8 +3,7 @@
         <div class="row">
             <!-- logo -->
             <div class="col-md-2 logo">
-                <a href="#"><img src="<?php echo get_asset_url('img/bsm-logo-name-full-white.png') ?>" alt="CoreApp - Admin Dashboard"></a>
-                <h1 class="sr-only">PT. BSM</h1>
+                <a href="#"><img src="<?php echo get_asset_url('img/logo-lubuklinggau-bar.png') ?>" alt="Lubuklinggau" style="max-height: 28px;"></a>
             </div>
             <!-- end logo -->
             <div class="col-md-10">

@@ -7,7 +7,6 @@
  */
 class Userlib extends Library {
     private static $objInstance;
-    private $_service_url;// = 'http://localhost/~marwansaleh/authentication/service/';
     
     private $_prefix_session_access = '_ACC_';
     private $_role_session = '_ROLE_SESSION_';
@@ -15,8 +14,6 @@ class Userlib extends Library {
     
     function __construct() {
         parent::__construct();
-        
-        $this->_service_url = $this->ci->config->item('service_url');
     }
     
     public static function getInstance(  ) { 
@@ -69,13 +66,12 @@ class Userlib extends Library {
      * @return boolean FALSE if failed, return user object if succeed
      */
     public function login($username, $password){
-        $login_service = $this->_login_service($username, $password);
-        if ($login_service && $login_service->status){
+        $user_loggedin = $this->_login_service($username, $password);
+        if ($user_loggedin){
             //login success
-            $user_loggedin = $login_service->user;
             //create session for detail user
             $user_session = array();
-            foreach ($login_service->user as $prop => $prop_value){
+            foreach ($user_loggedin as $prop => $prop_value){
                 $user_session[$this->_prefix_session_access . $prop] = $prop_value;
             }
             $user_session[$this->_prefix_session_access.'isloggedin'] = TRUE;
@@ -195,31 +191,39 @@ class Userlib extends Library {
      * @return boolean FALSE if FAILED or object login if success
      */
     private function _login_service($username,$password){
-        $service_url = $this->_service_url . 'user/login';
-        
-        $login_data = array('username'=>$username, 'password'=>$password);
-        
-        $ch = curl_init(); 
-        // set url 
-        curl_setopt($ch, CURLOPT_URL, $service_url); 
-
-        curl_setopt($ch,CURLOPT_POST,true); 
-        curl_setopt($ch,CURLOPT_POSTFIELDS,  http_build_query($login_data));
-        //return the transfer as a string 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-
-        // $output contains the output string 
-        $output = curl_exec($ch); 
-        if (curl_errno($ch)){
-            return FALSE;
-        }else{
-            //echo $output; exit;
-            $output = json_decode($output);
+        if (!isset($this->ci->user_m)){
+            $this->ci->load->model('user_m');
         }
-        // close curl resource to free up system resources 
-        curl_close($ch);  
         
-        return $output;
+        $user = $this->ci->user_m->get_by(array('username'=>$username, 'password'=>  $this->hash($password)), TRUE);
+        if (!$user){
+            //try to use email
+            $user = $this->ci->user_m->get_by(array('email'=>$username, 'password'=>  $this->hash($password)), TRUE);
+        }
+        
+        if ($user){
+            //load helper
+            $this->ci->load->helper('general');
+            $this->ci->load->model(array('group_m','bidang_m'));
+            if ($user->bidang){
+                $user->bidang = $this->ci->bidang_m->get($user->bidang);
+            }
+            if ($user->grup){
+                $user->grup = $this->ci->group_m->get($user->grup);
+            }
+            $user->root = $user->grup->id == CT_USERTYPE_ROOT ? TRUE : FALSE;
+            $user->active = $user->active ? TRUE : FALSE;
+            
+            if ($user->avatar){
+                $user->avatar = avatar_url($user->avatar);
+            }else{
+                $random_avatar = rand(1, 7);
+                $user->avatar = avatar_url('user'.$random_avatar.'.png');
+            }
+            
+        }
+        
+        return $user;
     }
     /**
      * User logout / end session
@@ -309,6 +313,9 @@ class Userlib extends Library {
         return $this->ci->session->userdata($this->_page_session);
     }
     
+    public function hash($subject){
+        return hash('md5', config_item('encryption_key') . $subject);
+    }
 }
 
 /**
