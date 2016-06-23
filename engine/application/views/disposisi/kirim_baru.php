@@ -130,18 +130,18 @@
         <div class="col-lg-12">
             <div class="form-group form-group-lg">
                 <?php if ($disposisi->tipe==MAIL_INCOMING): ?>
-                <button type="submit" class="btn btn-primary btn-large"><i class="fa fa-save"></i> Kirim Disposisi</button>
+                <button type="submit" id="btn-submit" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-save"></i> Kirim Disposisi</button>
                 <?php elseif ($disposisi->tipe==MAIL_OUTGOING || $disposisi->tipe==MAIL_NODIN): ?>
                     <button type="submit" id="btn-submit-out" class="hidden"></button>
                     <?php if ($disposisi->status == STATUS_OUT_APPROVAL || $disposisi->status == STATUS_NODIN_APPROVAL): ?>
-                    <button type="button" id="btn-approve" class="btn btn-primary btn-large"><i class="fa fa-check-circle-o"></i> Disetujui</button>
-                    <button type="button" id="btn-approvetosign" class="btn btn-success btn-large"><i class="fa fa-check"></i> Disetujui untuk Tandatangan</button>
-                    <button type="button" id="btn-reject" class="btn btn-warning btn-large"><i class="fa fa-remove"></i> Revisi</button>
+                    <button type="button" id="btn-approve" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-check-circle-o"></i> Disetujui</button>
+                    <button type="button" id="btn-approvetosign" class="btn btn-success btn-large" data-loading-text="Wait..."><i class="fa fa-check"></i> Disetujui untuk Tandatangan</button>
+                    <button type="button" id="btn-reject" class="btn btn-warning btn-large" data-loading-text="Wait..."><i class="fa fa-remove"></i> Revisi</button>
                     <?php elseif (($disposisi->status == STATUS_OUT_REVISION && $mail->status==STATUS_OUT_REVISION)||($disposisi->status == STATUS_NODIN_REVISION && $mail->status==STATUS_NODIN_REVISION)): ?>
-                    <button type="button" id="btn-sendrevision" class="btn btn-primary btn-large"><i class="fa fa-share"></i> Kirim Perbaikan</button>
+                    <button type="button" id="btn-sendrevision" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-share"></i> Kirim Perbaikan</button>
                     <?php elseif ($disposisi->status == STATUS_OUT_SIGNING || $disposisi->status == STATUS_NODIN_SIGNING): ?>
-                    <button type="button" id="btn-sign" class="btn btn-primary btn-large"><i class="fa fa-check-circle-o"></i> Tandatangani</button>
-                    <button type="button" id="btn-reject" class="btn btn-warning btn-large"><i class="fa fa-remove"></i> Revisi</button>
+                    <button type="button" id="btn-sign" class="btn btn-primary btn-large" data-loading-text="Wait..."><i class="fa fa-check-circle-o"></i> Tandatangani</button>
+                    <button type="button" id="btn-reject" class="btn btn-warning btn-large" data-loading-text="Wait..."><i class="fa fa-remove"></i> Revisi</button>
                     <?php endif ;?>
                 <?php endif; ?>
                 <div class="pull-right">
@@ -160,6 +160,7 @@
         mailId: 0,
         mailType: null,
         userId: 0,
+        submitBtnClicked: $('#btn-submit'),
         _initSelectPenerima: function(){
             var $row = $('.row-penerima');
             var $select2 = $row.find('.select-penerima');
@@ -212,12 +213,15 @@
                         alert('Penerima disposisi tidak boleh kosong');
                         return false;
                     }
+                    var $btn = _this.submitBtnClicked;
+                    $btn.button('loading');
                     $(form).ajaxSubmit({
                         type: 'POST',
                         url: '<?php echo get_action_url('service/disposisi'); ?>',
                         dataType: 'json',
                         clearForm: true,
                         success: function(data){
+                            $btn.button('reset');
                             if (data.status){
                                 $(".select-penerima").val('').trigger('change');
                                 _this.loadDisposisi();
@@ -243,22 +247,27 @@
             });
             /******* for outgoing only *********/
             $('#btn-approve').on('click', function(){
+                _this.submitBtnClicked = $(this);
                 $('input#status').val('<?php echo STATUS_OUT_APPROVED; ?>');
                 $('#btn-submit-out').trigger('click');
             });
             $('#btn-approvetosign').on('click', function(){
+                _this.submitBtnClicked = $(this);
                 $('input#status').val('<?php echo STATUS_OUT_SIGNING; ?>');
                 $('#btn-submit-out').trigger('click');
             });
             $('#btn-sign').on('click', function(){
+                _this.submitBtnClicked = $(this);
                 $('input#status').val('<?php echo STATUS_OUT_SIGNED; ?>');
                 $('#btn-submit-out').trigger('click');
             });
             $('#btn-reject').on('click', function(){
+                _this.submitBtnClicked = $(this);
                 $('input#status').val('<?php echo STATUS_OUT_REVISION; ?>');
                 $('#btn-submit-out').trigger('click');
             });
             $('#btn-sendrevision').on('click', function(){
+                _this.submitBtnClicked = $(this);
                 $('input#status').val('<?php echo STATUS_OUT_APPROVAL; ?>');
                 $('#btn-submit-out').trigger('click');
             });
