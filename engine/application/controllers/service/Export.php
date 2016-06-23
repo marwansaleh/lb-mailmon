@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once  APPPATH.'libraries/PHPWord/Autoloader.php';
+require_once  APPPATH.'libraries/PhpWord/Autoloader.php';
 
 /**
  * Description of Export
