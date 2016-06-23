@@ -6,30 +6,26 @@
  * @author marwansaleh 11:13:40 PM
  */
 class Service extends Library {
-    private $ci;
+    protected $ci;
     function __construct() {
         parent::__construct();
         $this->ci =& get_instance(); 
     }
     
     public function get_users($array=FALSE){
-        $users = NULL;
-        
         if (!isset($this->ci->user_m)){
             $this->ci->load->model('user_m');
         }
         
         $users = $this->ci->user_m->get();
         
-        if ($users){
-            if ($array){
-                $result = array();
-                foreach ($users as $item){
-                    $result[$item->id] = $item;
-                }
-
-                return $result;
+        if ($users && $array){
+            $result = array();
+            foreach ($users as $item){
+                $result[$item->id] = $item;
             }
+
+            return $result;
         }
         
         return $users;
@@ -42,12 +38,10 @@ class Service extends Library {
         
         $items = $this->ci->bidang_m->get();
         
-        if ($items){
-            if ($array){
-                $result = array();
-                foreach ($items as $item){
-                    $result[$item->id] = $item;
-                }
+        if ($items && $array){
+            $result = array();
+            foreach ($items as $item){
+                $result[$item->id] = $item;
             }
             
             return $result;
@@ -63,12 +57,10 @@ class Service extends Library {
         
         $items = $this->ci->group_m->get();
         
-        if ($items){
-            if ($array){
-                $result = array();
-                foreach ($items as $item){
-                    $result[$item->id] = $item;
-                }
+        if ($items && $array){
+            $result = array();
+            foreach ($items as $item){
+                $result[$item->id] = $item;
             }
             
             return $result;

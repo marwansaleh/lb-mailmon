@@ -14,9 +14,6 @@ class Outgoing extends REST_Api {
         'pengirim'          => 'pengirim',
         'bidang_pengirim'   => 'bidang_pengirim',
         'penerima'          => 'penerima',
-        'persetujuan_direksi'=> 'persetujuan_direksi',
-        'tipe_surat'        => 'tipe_surat',
-        'tipe_tujuan'       => 'tipe_tujuan',
         'sifat_surat'       => 'sifat_surat',
         'isi_surat'         => 'isi_surat',
         'status'            => 'status',
@@ -133,9 +130,6 @@ class Outgoing extends REST_Api {
             'pengirim'          => $user_id,
             'bidang_pengirim'   => $this->post('bidang_pengirim'),
             'penerima'          => $this->post('penerima'),
-            'persetujuan_direksi'=> $this->post('persetujuan_direksi'),
-            'tipe_surat'        => $this->post('tipe_surat'),
-            'tipe_tujuan'       => $this->post('tipe_tujuan'),
             'sifat_surat'       => $this->post('sifat_surat'),
             'signer'            => $this->post('signer'),
             'isi_surat'         => $this->post('isi_surat', FALSE),
@@ -187,9 +181,6 @@ class Outgoing extends REST_Api {
             'nomor_surat'       => $this->put('nomor_surat'),
             'perihal'           => $this->put('perihal'),
             'penerima'          => $this->put('penerima'),
-            'persetujuan_direksi'=> $this->put('persetujuan_direksi'),
-            'tipe_surat'        => $this->put('tipe_surat'),
-            'tipe_tujuan'       => $this->put('tipe_tujuan'),
             'sifat_surat'       => $this->put('sifat_surat'),
             'signer'            => $this->put('signer'),
             'isi_surat'         => $this->put('isi_surat', FALSE),
@@ -233,57 +224,6 @@ class Outgoing extends REST_Api {
             }
         }else{
             $result['message'] = $this->rel_outgoing_m->get_last_message();
-        }
-        
-        $this->response($result);
-    }
-    
-    public function gen_nomor_post(){
-        $this->load->model(array('rel_rekap_m','rel_outgoing_m'));
-        $result = array('status'=>FALSE);
-        
-        $mailId = $this->post('mail');
-        if ($mailId){
-            //check di rekap surat, apakah sudah terdaftar dan memiliki nomor
-            $rekap_record = $this->rel_rekap_m->get_by(array('surat'=>$mailId, 'tipe'=>MAIL_OUTGOING), TRUE);
-            if ($rekap_record && $rekap_record->nomor){
-                $result['status'] = TRUE;
-                $result['nomor_surat'] = $rekap_record->nomor;
-                
-                $this->rel_outgoing_m->save(array('nomor_surat'=>$rekap_record->nomor),$mailId);
-            }else{
-                $mail = $this->rel_outgoing_m->get($mailId);
-                
-                //generate nomor surat dari service nomor surat generator
-                $service = new Service();
-                $users = $service->get_users(TRUE);
-                $gen_service_result = $service->generate_nomor(array(
-                    'bidang_pengirim'       => $mail->bidang_pengirim,
-                    'tipe_tujuan'           => $mail->tipe_tujuan,
-                    'nama_penerima'         => isset($users[$mail->penerima]) ? $users[$mail->penerima]->nama : $mail->penerima,
-                    'perihal'               => $mail->perihal,
-                    'persetujuan_direksi'   => $mail->persetujuan_direksi,
-                    'sifat_surat'           => $mail->sifat_surat,
-                    'bulan'                 => date('m', strtotime($mail->tanggal_surat)),
-                    'tahun'                 => date('Y', strtotime($mail->tanggal_surat)),
-                    'sandi_perihal'         => $mail->sandi,
-                    'type_nomor'            => $mail->tipe_surat,
-                    'created_by'            => 0
-                ));
-                if ($gen_service_result){
-                    $result['status'] = TRUE;
-                    $result['nomor_surat'] = $gen_service_result->nomor_surat;
-                    
-                    //update surat
-                    $this->rel_rekap_m->save_where(array('nomor'=>$gen_service_result->nomor_surat),array('surat'=>$mailId,'tipe'=>MAIL_OUTGOING));
-                    $this->rel_outgoing_m->save(array('nomor_surat'=>$gen_service_result->nomor_surat),$mailId);
-                }else{
-                    $result['message'] = 'Gagal mengenerate nomor surat dari web service';
-                }
-            }
-            
-        }else{
-            $result['message'] = 'Parameter ID tidak didefinisikan';
         }
         
         $this->response($result);

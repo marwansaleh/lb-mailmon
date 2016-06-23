@@ -50,37 +50,13 @@ class Menu extends Admin_Controller {
         
         //suporting data
         $this->data['modules'] = $this->mtr_module_m->get();
-        $this->data['groups'] = $this->_get_user_grup_service();
+        $srvc = new Service();
+        $this->data['groups'] = $srvc->get_groups();
         
         $this->data['back_url'] = get_action_url('system/menu');
         
         $this->data['subview'] = 'system/menu/edit';
         $this->load->view('_layout_main', $this->data);
-    }
-    
-    private function _get_user_grup_service(){
-        $service_url = config_item('service_url') . 'grup/all';
-        
-        $ch = curl_init(); 
-        // set url 
-        curl_setopt($ch, CURLOPT_URL, $service_url); 
-
-        curl_setopt($ch,CURLOPT_POST,FALSE); 
-        //return the transfer as a string 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-
-        // $output contains the output string 
-        $output = curl_exec($ch); 
-        if (curl_errno($ch)){
-            return FALSE;
-        }else{
-            //echo $output; exit;
-            $output = json_decode($output);
-        }
-        // close curl resource to free up system resources 
-        curl_close($ch);  
-        
-        return isset($output->items) ? $output->items : NULL;
     }
 }
 

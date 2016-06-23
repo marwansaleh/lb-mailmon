@@ -14,12 +14,7 @@
                 <div class="col-sm-4">
                     <div class="form-group">
                         <label>Nomor Surat</label>
-                        <div class="input-group">
-                            <input type="text" readonly="readonly" id="nomor-surat" name="nomor_surat" class="form-control" value="<?php echo $item->nomor_surat; ?>">
-                            <div class="input-group-btn">
-                                <button type="button" id="btn-gen-nomor" class="btn btn-warning <?php echo $item->nomor_surat ? 'disabled':''; ?>" data-loading-text="Wait..." <?php echo $item->nomor_surat ? 'disabled="true"':''; ?>>Generate</button>
-                            </div>
-                        </div>
+                        <input type="text" id="nomor-surat" name="nomor_surat" class="form-control" value="<?php echo $item->nomor_surat; ?>">
                     </div>
                 </div>
                 <div class="col-sm-4">
@@ -31,17 +26,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2">
-                    <div class="form-group">
-                        <label>Tipe Surat</label>
-                        <select class="form-control" name="tipe_surat">
-                            <?php foreach ($tipe_surat as $ts): ?>
-                            <option value="<?php echo $ts->id; ?>" <?php echo $item->tipe_surat==$ts->id?'selected':''; ?>><?php echo $ts->nama; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-2">
+                <div class="col-sm-4">
                     <div class="form-group">
                         <label>Sifat Surat</label>
                         <select class="form-control" name="sifat_surat">
@@ -53,52 +38,24 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-10">
+                <div class="col-sm-12">
                     <div class="form-group">
                         <label>Perihal</label>
                         <input type="text" name="perihal" class="form-control" value="<?php echo $item->perihal; ?>" />
                     </div>
                 </div>
-                <div class="col-sm-2">
-                    <div class="form-group">
-                        <label>Asal Surat</label>
-                        <select class="form-control" name="sandi">
-                            <?php foreach ($pilihan_sandi as $sandi): ?>
-                            <option value="<?php echo $sandi->sandi; ?>" <?php echo $item->sandi==$sandi->sandi?'selected':''; ?>><?php echo $sandi->nama; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
             </div>
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <div class="form-group">
                         <label>Penerima</label>
                         <input type="text" name="penerima" class="form-control" value="<?php echo $item->penerima; ?>" />
                     </div>
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <div class="form-group">
                         <label>Signer</label>
                         <select id="select-signer" name="signer" class="form-control" data-selected-id="<?php echo $item->signer; ?>" style="width:100%;"></select>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="form-group">
-                        <label>Tujuan</label>
-                        <select class="form-control" name="tipe_tujuan">
-                            <option value="<?php echo DEST_EXTERNAL; ?>" <?php echo $item->tipe_tujuan==DEST_EXTERNAL?'selected':''; ?>>Eksternal</option>
-                            <option value="<?php echo DEST_INTERNAL; ?>" <?php echo $item->tipe_tujuan==DEST_INTERNAL?'selected':''; ?>>Internal</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="form-group">
-                        <label>Persetujuan Direksi</label>
-                        <select class="form-control" name="persetujuan_direksi">
-                            <option value="0" <?php echo $item->persetujuan_direksi==0?'selected':''; ?>>Tidak</option>
-                            <option value="1" <?php echo $item->persetujuan_direksi==1?'selected':''; ?>>Ya</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -225,7 +182,7 @@
             var initial_id = $select2.attr('data-selected-id');
             $select2.select2({
                 ajax: {
-                    url: "<?php echo config_item('service_url') .'user/select2'; ?>",
+                    url: "<?php echo get_action_url('service/user/select2'); ?>",
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -255,7 +212,7 @@
                 $select2.append($option).trigger('change');
                 $.ajax({ // make the request for the selected data object
                     type: 'GET',
-                    url: '<?php echo config_item('service_url') .'user/select2'; ?>/' + initial_id,
+                    url: '<?php echo get_action_url('service/user/select2'); ?>/' + initial_id,
                     dataType: 'json'
                 }).then(function (data) {
                     // Here we should have the data object
@@ -300,11 +257,6 @@
                         _this.mailId = parseInt(data.item.id);
                         
                         $('#btn-upload').prop('disabled', _this.mailId ? false : true);
-                        if ($('#nomor-surat').val()){
-                            $('#btn-gen-nomor').prop('disabled',true);
-                        }else{
-                            $('#btn-gen-nomor').prop('disabled',false);
-                        }
                         alert('Surat keluar berhasil disimpan');
                     }else{
                         alert(data.message);
@@ -328,33 +280,6 @@
                 window.location = url;
             });
             
-            /* button generate nomor surat */
-            var button_gen_disabled = true;
-            if (_this.mailId){
-                button_gen_disabled = false;
-            }
-            if ($('#nomor-surat').val()){
-                button_gen_disabled = true;
-            }
-            $('#btn-gen-nomor').prop('disabled', button_gen_disabled).on('click', function(){
-                var $btn = $(this);
-                $btn.button('loading');
-                $.ajax({
-                    url: '<?php echo get_action_url('service/outgoing/gen_nomor'); ?>',
-                    type: 'POST',
-                    data: {mail: _this.mailId},
-                    dataType: 'json'
-                }).then(function(data){
-                    $btn.button('reset');
-                    
-                    if (data.status){
-                        $btn.parents('.input-group').find('input[name="nomor_surat"]').val(data.nomor_surat);
-                        
-                        //hide the button control
-                        $btn.prop('disabled', true);
-                    }
-                });
-            });
         }
     };
     $(document).ready(function(){

@@ -86,8 +86,6 @@ class Register extends Admin_Controller {
         
         //suporting data
         $this->data['sifat_surat'] = $this->mtr_sifat_m->get();
-        $me = $this->userlib->me();
-        $this->data['pilihan_sandi'] = $this->_prepare_bidang_options($me->bidang->id);
         $this->data['pagestyles'] = wordpagestyling(TRUE);
         
         $this->data['back_url'] = get_action_url('nodin/register');

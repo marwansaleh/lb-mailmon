@@ -8,7 +8,7 @@
 class Migration_add_rel_surat_keluar extends MY_Migration {
     protected $_table_name = 'rel_surat_keluar';
     protected $_primary_key = 'id';
-    protected $_index_keys = array('nomor_surat','pengirim','perihal','tipe_tujuan');
+    protected $_index_keys = array('nomor_surat','pengirim','perihal');
     protected $_fields = array(
         'id'    => array (
             'type'  => 'INT',
@@ -40,29 +40,10 @@ class Migration_add_rel_surat_keluar extends MY_Migration {
             'constraint' => 3,
             'null' => FALSE
         ),
-        'sandi' => array(
-            'type' => 'VARCHAR',
-            'constraint' => 3,
-            'null' => FALSE
-        ),
         'penerima' => array(
             'type' => 'VARCHAR',
             'constraint' => 50,
             'null' => FALSE
-        ),
-        'persetujuan_direksi' => array(
-            'type' => 'TINYINT',
-            'constraint' => 1,
-            'default' => 0
-        ),
-        'tipe_surat' => array(
-            'type' => 'TINYINT',
-            'constraint' => 1,
-            'default' => 0
-        ),
-        'tipe_tujuan' => array(
-            'type' => 'ENUM("internal","eksternal")',
-            'default' => 'internal'
         ),
         'sifat_surat' => array(
             'type' => 'TINYINT',

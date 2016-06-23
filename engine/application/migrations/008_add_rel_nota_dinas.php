@@ -25,11 +25,6 @@ class Migration_add_rel_nota_dinas extends MY_Migration {
             'constraint' => 25,
             'null' => TRUE
         ),
-        'sifat_surat' => array(
-            'type' => 'TINYINT',
-            'constraint' => 1,
-            'default' => 0
-        ),
         'perihal' => array(
             'type' => 'VARCHAR',
             'constraint' => 254,
@@ -42,11 +37,6 @@ class Migration_add_rel_nota_dinas extends MY_Migration {
         ),
         'bidang_pengirim' => array(
             'type' => 'INT',
-            'constraint' => 3,
-            'null' => FALSE
-        ),
-        'sandi' => array(
-            'type' => 'VARCHAR',
             'constraint' => 3,
             'null' => FALSE
         ),
@@ -75,11 +65,6 @@ class Migration_add_rel_nota_dinas extends MY_Migration {
         'pagestyle'      => array(
             'type' => 'TEXT',
             'null' => TRUE
-        ),
-        'persetujuan_direksi' => array(
-            'type' => 'TINYINT',
-            'constraint' => 1,
-            'default' => 0
         ),
         'status' => array(
             'type' => 'TINYINT',

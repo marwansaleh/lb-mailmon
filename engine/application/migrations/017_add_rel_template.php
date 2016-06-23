@@ -50,7 +50,7 @@ class Migration_add_rel_template extends MY_Migration {
             array(
                 'nama'          => 'Surat Keluar',
                 'tipe'          => 'outgoing',
-                'header'        => 'PT. BRIngin Sejahtera Makmur',
+                'header'        => 'Pemkot Lubuklinggau',
                 'footer'        => NULL,
                 'content'       => 'Surat keluar biasa',
                 'pagestyle'     => NULL
@@ -58,7 +58,7 @@ class Migration_add_rel_template extends MY_Migration {
             array(
                 'nama'          => 'Nota Dinas',
                 'tipe'          => 'nodin',
-                'header'        => 'PT. BRIngin Sejahtera Makmur',
+                'header'        => 'Pemkot Lubuklinggau',
                 'footer'        => NULL,
                 'content'       => 'Surat nota dinas',
                 'pagestyle'     => NULL

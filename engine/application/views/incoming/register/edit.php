@@ -88,7 +88,7 @@
             var initial_id = $select2.attr('data-selected-id');
             $select2.select2({
                 ajax: {
-                    url: "<?php echo config_item('service_url') .'user/select2'; ?>",
+                    url: "<?php echo get_action_url('service/user/select2'); ?>",
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -118,7 +118,7 @@
                 $select2.append($option).trigger('change');
                 $.ajax({ // make the request for the selected data object
                     type: 'GET',
-                    url: '<?php echo config_item('service_url') .'user/select2'; ?>/' + initial_id,
+                    url: '<?php echo get_action_url('service/user/select2'); ?>/' + initial_id,
                     dataType: 'json'
                 }).then(function (data) {
                     // Here we should have the data object

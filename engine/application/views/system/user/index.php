@@ -8,8 +8,7 @@
                     <th>Nama</th>
                     <th>Bidang</th>
                     <th>Group</th>
-                    <th>Cabang</th>
-                    <th>NIK</th>
+                    <th>NIP</th>
                     <th>Email</th>
                     <th class="text-right">#</th>
                 </tr>
@@ -45,7 +44,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "<?php echo config_item('service_url'); ?>/user",
+                    url: "<?php echo get_action_url('service/user'); ?>",
                     dataSrc: "items"
                 },
                 columns:[
@@ -60,13 +59,6 @@
                             }
                     }},
                     {data: "grup", render: function(data,type,row){
-                            if (data){
-                                return data.nama;
-                            }else{
-                                return '-';
-                            }
-                    }},
-                    {data: "wilayah", render: function(data,type,row){
                             if (data){
                                 return data.nama;
                             }else{

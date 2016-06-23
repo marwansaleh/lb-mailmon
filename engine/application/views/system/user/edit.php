@@ -47,31 +47,26 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group">
-                                <label>Wilayah / Cabang</label>
-                                <select class="form-control" name="wilayah"></select>
+                                <label>NIP</label>
+                                <input type="text" class="form-control" name="nik">
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-3">
-                            <div class="form-group">
-                                <label>NIK</label>
-                                <input type="text" class="form-control" name="nik">
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
+                        
+                        <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Email</label>
                                 <input type="text" class="form-control" name="email">
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Mobile</label>
                                 <input type="text" class="form-control" name="mobile">
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Telpon</label>
                                 <input type="text" class="form-control" name="telepon">
@@ -104,6 +99,10 @@
                     username: {
                         minlength: 2,
                         required: true
+                    },
+                    nik: {
+                        minlength: 2,
+                        required: true
                     }
                 },
                 highlight: function(element) {
@@ -116,17 +115,12 @@
                     var submitType = _this.userId ? 'PUT' : 'POST';
                     $(form).ajaxSubmit({
                         type: submitType,
-                        url: '<?php echo config_item('service_url'); ?>/user/save/'+_this.userId,
+                        url: '<?php echo get_action_url('service/user/save'); ?>/'+_this.userId,
                         dataType: 'json',
                         success: function(data){
                             if (data.status){
                                 $('#item-id').val(data.item.id);
                                 _this.userId = parseInt(data.item.id);
-                                
-                                //insert new user to db user local
-                                if (!_this.userId){
-                                    _this.insertLocalUser(data.item.id);
-                                }
                                 
                                 alert('User berhasil disimpan');
                             }else{
@@ -145,7 +139,7 @@
             var _this = this;
             
             $.ajax({
-                url: '<?php echo config_item('service_url'); ?>/user/support',
+                url: '<?php echo get_action_url('service/user/support'); ?>',
                 type: 'GET',
                 dataType: 'json'
             }).then(function(data){
@@ -166,12 +160,6 @@
                     $select_bidang.append('<option value="'+bidang.id+'">'+bidang.nama+'</option>');
                 }
                 
-                $select_wilayah.empty().append('<option value="0">--Pilih Wilayah--</option>');
-                for (var i in data.wilayah){
-                    var wilayah = data.wilayah[i];
-                    $select_wilayah.append('<option value="'+wilayah.id+'">'+wilayah.nama+'</option>');
-                }
-                
                 if (loadUserId){
                     _this.loadUser(loadUserId);
                 }
@@ -179,7 +167,7 @@
         },
         loadUser: function(userId){
             $.ajax({
-                url: '<?php echo config_item('service_url'); ?>/user/user/'+userId,
+                url: '<?php echo get_action_url('service/user/user'); ?>/'+userId,
                 type: 'GET',
                 dataType: 'json'
             }).then(function(data){
@@ -189,19 +177,11 @@
                     $('input[name="username"]').val(user.username);
                     $('select[name="grup"]').val(user.grup ? user.grup.id: 0);
                     $('select[name="bidang"]').val(user.bidang ? user.bidang.id : 0);
-                    $('select[name="wilayah"]').val(user.wilayah ? user.wilayah.id : 0);
                     $('input[name="nik"]').val(user.nik);
                     $('input[name="email"]').val(user.email);
                     $('input[name="mobile"]').val(user.mobile);
                     $('input[name="telepon"]').val(user.telepon);
                 }
-            });
-        },
-        insertLocalUser: function(userId){
-            $.ajax({
-                url: '<?php get_action_url('service/user'); ?>',
-                type: 'POST',
-                data: {userid: userId}
             });
         }
     };

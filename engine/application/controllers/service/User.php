@@ -12,7 +12,6 @@ class User extends REST_Api {
         'nama'                  => 'nama',
         'grup'                  => 'grup',
         'bidang'                => 'bidang',
-        'wilayah'               => 'wilayah',
         'nik'                   => 'nik',
         'email'                 => 'email',
         'mobile'                => 'mobile',
@@ -27,7 +26,7 @@ class User extends REST_Api {
     }
     
     function index_get(){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         
         $draw = $this->get('draw') ? $this->get('draw') : 1;
         $length = $this->get('length') ? $this->get('length') : 10;
@@ -71,7 +70,7 @@ class User extends REST_Api {
     }
     
     function all_get($simple=0){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         
         $result = array('item_count'=>0, 'items'=>array());
         
@@ -110,16 +109,17 @@ class User extends REST_Api {
     }
     
     function save_post(){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         $result = array('status'=>FALSE);
+        
+        $userlib = Userlib::getInstance();
         
         $data = array(
             'nama'          => $this->post('nama'),
             'username'      => $this->post('username'),
-            'password'      => $this->hash($this->post('password') ? $this->post('password') : 123),
+            'password'      => $userlib->hash($this->post('password') ? $this->post('password') : 123),
             'grup'          => $this->post('grup'),
             'bidang'        => $this->post('bidang'),
-            'wilayah'       => $this->post('wilayah'),
             'nik'           => $this->post('nik'),
             'email'         => $this->post('email'),
             'mobile'        => $this->post('mobile'),
@@ -138,7 +138,7 @@ class User extends REST_Api {
     }
     
     function save_put($id){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         $result = array('status'=>FALSE);
         
         if ($id){
@@ -147,7 +147,6 @@ class User extends REST_Api {
                 'username'      => $this->put('username'),
                 'grup'          => $this->put('grup'),
                 'bidang'        => $this->put('bidang'),
-                'wilayah'       => $this->put('wilayah'),
                 'nik'           => $this->put('nik'),
                 'email'         => $this->put('email'),
                 'mobile'        => $this->put('mobile'),
@@ -155,7 +154,8 @@ class User extends REST_Api {
                 'active'        => $this->put('active')
             );
             if ($this->put('change_password') && $this->put('password')){
-                $data['password'] = $this->hash($this->put('password'));
+                $userlib = Userlib::getInstance();
+                $data['password'] = $userlib->hash($this->put('password'));
             }
             if ($this->user_m->save($data, $id)){
                 $result['status'] = TRUE;
@@ -171,7 +171,7 @@ class User extends REST_Api {
     }
     
     function user_get($id){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         $result = array('status'=>FALSE);
         
         $user = $this->user_m->get($id);
@@ -187,34 +187,11 @@ class User extends REST_Api {
     }
     
     function support_get(){
-        $this->load->model(array('group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('group_m','bidang_m'));
         $result = array(
             'grup'      => $this->group_m->get(),
-            'bidang'    => $this->bidang_m->get(),
-            'wilayah'   => $this->wilayah_m->get()
+            'bidang'    => $this->bidang_m->get()
         );
-        
-        $this->response($result);
-    }
-    
-    function login_post(){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
-        $username = $this->post('username');
-        $password = $this->hash($this->post('password'));
-        
-        $result = array('status'=>FALSE);
-        $user = $this->user_m->get_by(array('username'=>$username, 'password'=>$password), TRUE);
-        if (!$user){
-            //try to use email
-            $user = $this->user_m->get_by(array('email'=>$username, 'password'=>$password), TRUE);
-        }
-        
-        if ($user){
-            $result['status'] = TRUE;
-            $result['user'] = $this->remap_fields($this->_remap_fields, $this->_proccess_item($user));
-        }else{
-            $result['message'] = 'Username dan password tidak ditemukan di database';
-        }
         
         $this->response($result);
     }
@@ -224,7 +201,6 @@ class User extends REST_Api {
             $item->root = $item->grup == CT_USERTYPE_ROOT ? TRUE : FALSE;
             $item->grup = $item->grup ? $this->group_m->get($item->grup) : NULL;
             $item->bidang = $item->bidang ? $this->bidang_m->get($item->bidang) : NULL;
-            $item->wilayah = $item->wilayah ? $this->wilayah_m->get($item->wilayah) : NULL;
             $item->active = $item->active ? TRUE : FALSE;
             if ($item->avatar){
                 $item->avatar = site_url(config_item('avatar').$item->avatar);
@@ -245,17 +221,19 @@ class User extends REST_Api {
         $old_pwd = $this->post('old_password');
         $new_pwd = $this->post('new_password');
         
+        $userlib = Userlib::getInstance();
+        
         if (!$username || !$old_pwd || !$new_pwd){
             $result['message'] = 'Paramater tidak lengkap. Pastikan anda memasukkan username, password lama dan baru';
         }else{
-            $user = $this->user_m->get_by(array('username'=>$username, 'password'=>$this->hash($old_pwd)), TRUE);
+            $user = $this->user_m->get_by(array('username'=>$username, 'password'=>$userlib->hash($old_pwd)), TRUE);
             if (!$user){
                 //try to use email
-                $user = $this->user_m->get_by(array('email'=>$username, 'password'=>$this->hash($old_pwd)), TRUE);
+                $user = $this->user_m->get_by(array('email'=>$username, 'password'=>$userlib->hash($old_pwd)), TRUE);
             }
             
             if ($user){
-                if ($this->user_m->save(array('password'=>  $this->hash($new_pwd)), $user->id)){
+                if ($this->user_m->save(array('password'=>  $userlib->hash($new_pwd)), $user->id)){
                     $result['status'] = TRUE;
                 }
             }else{
@@ -267,7 +245,7 @@ class User extends REST_Api {
     }
     
     public function select2_get($id=NULL){
-        $this->load->model(array('user_m','group_m','bidang_m','wilayah_m'));
+        $this->load->model(array('user_m','group_m','bidang_m'));
         if ($id){
             
             $item = $this->remap_fields($this->_remap_fields, $this->_proccess_item($this->user_m->get($id)));

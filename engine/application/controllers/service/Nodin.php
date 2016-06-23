@@ -18,8 +18,6 @@ class Nodin extends REST_Api {
         'isi_surat'         => 'isi_surat',
         'status'            => 'status',
         'posisi_akhir'      => 'posisi_akhir',
-        'sandi'             => 'sandi',
-        'persetujuan_direksi'=>'persetujuan_direksi',
         'dokumen'           => 'dokumen',
         'created'           => 'created',
         'editable'          => 'editable',
@@ -126,8 +124,6 @@ class Nodin extends REST_Api {
             'bidang_pengirim'   => $this->post('bidang_pengirim'),
             'penerima'          => $this->post('penerima'),
             'bidang_penerima'   => $this->post('bidang_penerima'),
-            'sandi'             => $this->post('sandi'),
-            'persetujuan_direksi'=> $this->post('persetujuan_direksi'),
             'isi_surat'         => $this->post('isi_surat', FALSE),
             'header'            => $this->post('header'),
             'footer'            => $this->post('footer'),
@@ -178,8 +174,6 @@ class Nodin extends REST_Api {
             'perihal'           => $this->put('perihal'),
             'penerima'          => $this->put('penerima'),
             'bidang_penerima'   => $this->put('bidang_penerima'),
-            'sandi'             => $this->put('sandi'),
-            'persetujuan_direksi'=> $this->put('persetujuan_direksi'),
             'isi_surat'         => $this->put('isi_surat', FALSE),
             'header'            => $this->put('header', FALSE),
             'footer'            => $this->put('footer', FALSE),
@@ -224,55 +218,6 @@ class Nodin extends REST_Api {
         $this->response($result);
     }
     
-    public function gen_nomor_post(){
-        $this->load->model(array('rel_rekap_m','rel_nodin_m'));
-        $result = array('status'=>FALSE);
-        
-        $mailId = $this->post('mail');
-        if ($mailId){
-            //check di rekap surat, apakah sudah terdaftar dan memiliki nomor
-            $rekap_record = $this->rel_rekap_m->get_by(array('surat'=>$mailId, 'tipe'=>MAIL_NODIN), TRUE);
-            if ($rekap_record && $rekap_record->nomor){
-                $result['status'] = TRUE;
-                $result['nomor_surat'] = $rekap_record->nomor;
-                
-                $this->rel_nodin_m->save(array('nomor_surat'=>$rekap_record->nomor),$mailId);
-            }else{
-                $mail = $this->rel_nodin_m->get($mailId);
-                
-                //generate nomor surat dari service nomor surat generator
-                $service = new Service();
-                $gen_service_result = $service->generate_nomor(array(
-                    'bidang_pengirim'       => $mail->bidang_pengirim,
-                    'tipe_tujuan'           => DEST_INTERNAL,
-                    'nama_penerima'         => $mail->penerima,
-                    'perihal'               => $mail->perihal,
-                    'persetujuan_direksi'   => $mail->persetujuan_direksi,
-                    'sifat_surat'           => $mail->sifat_surat,
-                    'bulan'                 => date('m', strtotime($mail->tanggal_surat)),
-                    'tahun'                 => date('Y', strtotime($mail->tanggal_surat)),
-                    'sandi_perihal'         => $mail->sandi,
-                    'type_nomor'            => SURAT_BIASA,
-                    'created_by'            => 0
-                ));
-                if ($gen_service_result){
-                    $result['status'] = TRUE;
-                    $result['nomor_surat'] = $gen_service_result->nomor_surat;
-                    
-                    //update surat
-                    $this->rel_rekap_m->save_where(array('nomor'=>$gen_service_result->nomor_surat),array('surat'=>$mailId,'tipe'=>MAIL_NODIN));
-                    $this->rel_nodin_m->save(array('nomor_surat'=>$gen_service_result->nomor_surat),$mailId);
-                }else{
-                    $result['message'] = 'Gagal mengenerate nomor surat dari web service';
-                }
-            }
-            
-        }else{
-            $result['message'] = 'Parameter ID tidak didefinisikan';
-        }
-        
-        $this->response($result);
-    }
 }
 
 /**

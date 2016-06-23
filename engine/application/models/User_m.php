@@ -10,7 +10,7 @@ class User_m extends MY_Model {
     protected $_table_name = 'auth_user_account';
     protected $_primary_key = 'id';
     protected $_primary_filter = 'intval';
-    protected $_order_by = 'bidang,nik, nama';
+    protected $_order_by = 'bidang, nik, nama';
     protected $_timestamps = FALSE;
     
     public function save($data, $id = NULL) {

@@ -85,10 +85,7 @@ class Register extends Admin_Controller {
         breadcumb_add($this->data['breadcumb'], 'Update Surat', get_action_url('outgoing/register/edit/'.$id));
         
         //suporting data
-        $this->data['tipe_surat'] = $this->mtr_tipe_m->get();
         $this->data['sifat_surat'] = $this->mtr_sifat_m->get();
-        $me = $this->userlib->me();
-        $this->data['pilihan_sandi'] = $this->_prepare_bidang_options($me->bidang->id);
         
         $this->data['pagestyles'] = wordpagestyling(TRUE);
         
