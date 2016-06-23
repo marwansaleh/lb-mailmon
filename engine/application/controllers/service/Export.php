@@ -1,9 +1,9 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 if (file_exists(APPPATH.'libraries/PHPWord/Autoloader.php')){
-    echo json_encode(array('fileexists'=>TRUE));
+    echo json_encode(array('fileexists'=>TRUE,'filename'=>APPPATH.'libraries/PHPWord/Autoloader.php'));
 }else{
-    echo json_encode(array('fileexists'=>FALSE));
+    echo json_encode(array('fileexists'=>FALSE,'filename'=>APPPATH.'libraries/PHPWord/Autoloader.php'));
 }
 exit;
 require_once  APPPATH.'libraries/PHPWord/Autoloader.php';
