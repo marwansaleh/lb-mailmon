@@ -192,7 +192,7 @@ class Disposisi extends REST_Api {
                     'penerima'          => $this->post('penerima'),
                     'keterangan'        => $this->post('keterangan'),
                     'waktu_kirim'       => date('Y-m-d H:i:s'),
-                    'status'            => $this->post('status')
+                    'status'            => $mail_type == MAIL_INCOMING ? STATUS_IN_DISPOSED : $this->post('status')
                 );
 
                 $inserted_id = $this->rel_disposisi_m->save($data);
