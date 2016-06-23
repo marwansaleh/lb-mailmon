@@ -43,7 +43,7 @@ class Migration_Add_user_account extends MY_Migration {
         ),
         'nik' => array(
             'type'  => 'VARCHAR',
-            'constraint' => 15,
+            'constraint' => 20,
             'null' => TRUE
         ),
         'email' => array(
