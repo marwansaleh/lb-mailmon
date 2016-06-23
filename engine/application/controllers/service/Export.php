@@ -75,13 +75,22 @@ class Export extends REST_Api {
                     PhpOffice\PhpWord\Shared\Html::addHtml($footer, $mail->footer);
                 }
                 
-
+                /*
                 $filename = rtrim(sys_get_temp_dir(), '/') . '/' . url_title($mail->perihal, '_') . '.docx';
                 $objWriter = PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-                $objWriter->save($filename);
+                $objWriter->save($filename);*/
+                $file = url_title($mail->perihal, '_') . '.docx';
+                header("Content-Description: File Transfer");
+                header('Content-Disposition: attachment; filename="' . $file . '"');
+                header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                header('Content-Transfer-Encoding: binary');
+                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+                header('Expires: 0');
+                $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+                $xmlWriter->save("php://output");
                 
-                $result['status'] = TRUE;
-                $result['download_url'] = get_action_url('download/index/'.urlencode(base64_encode($filename)));
+               // $result['status'] = TRUE;
+                //$result['download_url'] = get_action_url('download/index/'.urlencode(base64_encode($filename)));
             }
         }
         $this->response($result);
