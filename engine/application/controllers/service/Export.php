@@ -48,6 +48,16 @@ class Export extends REST_Api {
                     }
                 }
                 $section = $phpWord->addSection($sectionStyle);
+                $phpWord->setDefaultParagraphStyle(
+                    array(
+                        'align'      => 'both',
+                        'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(12),
+                        'spacing'    => 120,
+                        'lineHeight' => 1.5
+                        )
+                );
+                $phpWord->setDefaultFontName('Arial');
+                $phpWord->setDefaultFontSize(11);
                 // Adding Text element to the Section having font styled by default...
                 PhpOffice\PhpWord\Shared\Html::addHtml($section, $mail->isi_surat);
                 
