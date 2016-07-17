@@ -202,12 +202,14 @@ class User extends REST_Api {
             $item->grup = $item->grup ? $this->group_m->get($item->grup) : NULL;
             $item->bidang = $item->bidang ? $this->bidang_m->get($item->bidang) : NULL;
             $item->active = $item->active ? TRUE : FALSE;
+            
             if ($item->avatar){
-                $item->avatar = site_url(config_item('avatar').$item->avatar);
+                $item->avatar = site_url($item->avatar);
             }else{
                 $random_avatar = rand(1, 7);
                 $item->avatar = site_url(config_item('avatar').'user'.$random_avatar.'.png');
             }
+            
         }
         
         return $item;
@@ -294,6 +296,52 @@ class User extends REST_Api {
 
             $this->response($result);
         }
+    }
+    
+    public function avatar_post($userid){
+        $this->load->model(array('user_m'));
+        
+        $result = array('status' => FALSE);
+        
+        $user = $this->user_m->get($userid);
+        if ($user){
+            $upload_path = config_item('avatar') . str_pad($userid, 4, '0', STR_PAD_LEFT) .'/';
+            $upload_file_name = $userid .'.jpg';
+            
+            $config['upload_path'] = $upload_path;
+            $config['overwrite'] = TRUE;
+            $config['file_name'] = $upload_file_name;
+            $config['allowed_types'] = 'jpg|png';
+            $config['max_size'] = 2000;
+
+            if (!file_exists($upload_path)){
+                mkdir($upload_path, 0777, TRUE);
+            }
+
+            $this->load->library('upload', $config);
+
+            if (!$this->upload->do_upload('avatar')) {
+                $result['message'] = $this->upload->display_errors();
+            } else {
+                $upload = $this->upload->data();
+                $inserted = $this->user_m->save(array('avatar' => $upload_path . $upload_file_name), $userid);
+                if ($inserted){
+                    $result['status'] = TRUE;
+                    $new_avatar = site_url($upload_path . $upload['file_name']);
+                    $result['avatar'] = $new_avatar;
+                    
+                    //update session
+                    $userlib = Userlib::getInstance();
+                    $userlib->update_avatar($new_avatar);
+                }else{
+                    $result['message'] = 'Failed saving new avatar to database';
+                }
+            }
+        }else{
+            $result['message'] = 'Could not found user with ID:'.$userid;
+        }
+        
+        $this->response($result);
     }
 }
 
