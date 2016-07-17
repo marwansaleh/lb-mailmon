@@ -411,7 +411,7 @@ if (!function_exists('avatar_path')){
 if (!function_exists('avatar_url')){
     function avatar_url($item=NULL){
         if ($item){
-            return site_url(config_item('avatar') . $item);
+            return site_url($item);
         }else{
             return site_url(config_item('avatar'));
         }
