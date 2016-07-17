@@ -1,6 +1,8 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once  APPPATH.'libraries/PhpWord/Autoloader.php';
+//require_once  APPPATH.'libraries/PhpWord/Autoloader.php';
+require_once  APPPATH.'libraries/phpdocxprof/classes/CreateDocx.inc';
+//require_once  APPPATH.'libraries/phpdocxprof/classes/WordFragment.inc';
 
 /**
  * Description of Export
@@ -34,63 +36,45 @@ class Export extends REST_Api {
             if (!$mail){
                 $result['message'] = 'Data surat tidak ditemukan';
             }else{
-                PhpOffice\PhpWord\Autoloader::register();
-                $phpWord = new PhpOffice\PhpWord\PhpWord();
-
-                // Adding an empty Section to the document...
-                $sectionStyle = NULL;
-                if ($mail->pagestyle){
-                    $style = json_decode($mail->pagestyle);
-                    $default_style = wordpagestyling(TRUE);
-                    
-                    foreach ($default_style as $prop => $def_value){
-                        $sectionStyle [$prop] = _wordpagestyling_convert($prop, isset($style->$prop) ? $style->$prop : $def_value);
-                    }
-                    if (isset($sectionStyle['colsNum'])&&$sectionStyle['colsNum']>1){
-                        $sectionStyle['breakType'] = 'continuous';
-                    }
-                }
-                $section = $phpWord->addSection($sectionStyle);
-                $phpWord->setDefaultParagraphStyle(
-                    array(
-                        'align'      => 'both',
-                        'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(12),
-                        'spacing'    => 120,
-                        'lineHeight' => 1.5
-                        )
+                
+                //generate filename without dot extension
+                $filename = rtrim(sys_get_temp_dir(), '/') . '/' . time();
+                
+                $phpdocx = new CreateDocx();
+                //$phpdocx->setLanguage('id-ID');
+                //create document properties
+                $properties = array(
+                    'title' => strtoupper($mail_type),
+                    'subject' => $mail->perihal,
+                    'creator' => 'PT. BRIngin Sejahtera Makmur',
+                    'keywords' => $mail_type,
+                    'description' => $mail->perihal,
+                    'category' => strtoupper($mail_type),
+                    'contentStatus' => $mail_type==MAIL_OUTGOING ? outgoing_status($mail->status) : nodin_status($mail->status),
+                    'company' => 'PT. BRIngin Sejahtera Makmur'
                 );
-                $phpWord->setDefaultFontName('Arial');
-                $phpWord->setDefaultFontSize(11);
-                // Adding Text element to the Section having font styled by default...
-                PhpOffice\PhpWord\Shared\Html::addHtml($section, $mail->isi_surat);
+                $phpdocx->addProperties($properties);
+                //insert isi surat in html format
+                $phpdocx->embedHTML($mail->isi_surat);
                 
-                // Add header if any
+                //check if any header / footer
                 if ($mail->header){
-                    $header = $section->addHeader();
-                    PhpOffice\PhpWord\Shared\Html::addHtml($header, $mail->header);
+                    $wordFragment = new WordFragment($phpdocx, 'defaultHeader');
+                    $wordFragment->addText($mail->header);
+                    $phpdocx->addHeader(array('default' => $wordFragment));
+                    //$rawHeaderML = $phpdocx->embedHTML($mail->header, array('rawWordML' => TRUE, 'target' => 'defaultHeader'));
+                    //$phpdocx->addHeader(array('default' => $phpdocx->createWordMLFragment(array($rawHeaderML))));
                 }
-                if ($mail->footer){
-                    // Add header
-                    $footer = $section->addFooter();
-                    PhpOffice\PhpWord\Shared\Html::addHtml($footer, $mail->footer);
+                //generate the docx file
+                $phpdocx->createDocx($filename);
+                
+                //return result json value
+                if (file_exists($filename .'.docx')){
+                    $result['status'] = TRUE;
+                    $result['download_url'] = get_action_url('download/index/'.urlencode(base64_encode($filename .'.docx')));
+                }else{
+                    $result['message'] = 'Sistem gagal membuat file ms word';
                 }
-                
-                /*
-                $filename = rtrim(sys_get_temp_dir(), '/') . '/' . url_title($mail->perihal, '_') . '.docx';
-                $objWriter = PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-                $objWriter->save($filename);*/
-                $file = url_title($mail->perihal, '_') . '.docx';
-                header("Content-Description: File Transfer");
-                header('Content-Disposition: attachment; filename="' . $file . '"');
-                header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-                header('Content-Transfer-Encoding: binary');
-                header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-                header('Expires: 0');
-                $xmlWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-                $xmlWriter->save("php://output");
-                
-               // $result['status'] = TRUE;
-                //$result['download_url'] = get_action_url('download/index/'.urlencode(base64_encode($filename)));
             }
         }
         $this->response($result);
