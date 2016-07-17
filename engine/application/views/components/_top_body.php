@@ -33,7 +33,7 @@
                                                         <div class="media">
                                                             <div class="media-left">
                                                                 <?php if (isset($notif->pengirim->avatar) && $notif->pengirim->avatar): ?>
-                                                                <img class="media-object" src="<?php echo $notif->pengirim->avatar; ?>" alt="<?php echo $notif->pengirim->nama; ?>">
+                                                                <img style="max-width: 28px;" class="media-object" src="<?php echo $notif->pengirim->avatar; ?>" alt="<?php echo $notif->pengirim->nama; ?>">
                                                                 <?php else: ?>
                                                                 <i class="fa fa-user"></i>
                                                                 <?php endif; ?>
@@ -58,7 +58,7 @@
                             <div class="logged-user">
                                 <div class="btn-group">
                                     <a href="#" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-                                        <img style="max-width: 28px;" src="<?php echo $me->avatar ? $me->avatar : get_asset_url('img/user-avatar.png'); ?>" alt="User Avatar">
+                                        <img style="max-width: 28px;" src="<?php echo $me->avatar ? $me->avatar : get_asset_url('img/user-avatar.png'); ?>" alt="User Avatar" class="avatar">
                                         <span class="name"><?php echo $me->nama; ?> [ <?php echo $me->bidang->nama; ?> ]</span> <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
@@ -66,6 +66,12 @@
                                             <a href="#" id="btn-change-password">
                                                 <i class="fa fa-user"></i>
                                                 <span class="text">Ganti Password</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#" id="btn-change-avatar">
+                                                <i class="fa fa-image"></i>
+                                                <span class="text">Ganti Foto Profil</span>
                                             </a>
                                         </li>
                                         <li>
@@ -135,6 +141,41 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Change Profile Photo-->
+<div class="modal fade" id="MyChangeProfilePhoto" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><span id="labelDialog">Ubah Foto Profil</span></h4>
+            </div>
+            <div class="modal-body">
+                <form id="MyFormChangeAvatar" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <img src="<?php echo $me->avatar; ?>" class="img-responsive avatar">
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group form-group-sm">
+                                <label>Pilih Foto (*.jpg | *.png)</label>
+                                <input type="file" class="form-control" name="avatar">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Submit Avatar</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     var Auth = {
         init: function(){
@@ -181,8 +222,44 @@
                 }
             });
             
+            $('#MyFormChangeAvatar').validate({
+                rules: {
+                    avatar: {
+                        minlength: 2,
+                        required: true
+                    }
+                },
+                highlight: function(element) {
+                    $(element).closest('.form-group').addClass('has-error');
+                },
+                unhighlight: function(element) {
+                    $(element).closest('.form-group').removeClass('has-error');
+                },
+                submitHandler: function(form){
+                    $(form).ajaxSubmit({
+                        clearForm: true,
+                        type: 'POST',
+                        url: '<?php echo get_action_url('service/user/avatar'); ?>/<?php echo $me->id; ?>',
+                        dataType: 'json',
+                        success: function(data){
+                            if (data.status){
+                                $('img.avatar').attr('src', data.avatar);
+                            }else{
+                                alert(data.message);
+                            }
+                        }
+                    });
+                    
+                    return false;
+                }
+            });
+            
             $('#btn-change-password').on('click', function(){
                 $('#MyChangePasswordDialog').modal('show');
+            });
+            
+            $('#btn-change-avatar').on('click', function(){
+                $('#MyChangeProfilePhoto').modal('show');
             });
         }
     };
