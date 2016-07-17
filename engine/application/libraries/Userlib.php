@@ -304,6 +304,11 @@ class Userlib extends Library {
         
         return $user;
     }
+    
+    public function update_avatar($avatar){
+        $this->ci->session->set_userdata($this->_prefix_session_access.'avatar', $avatar);
+    }
+    
     /**
      * Get user menu
      * @return array of user menu
